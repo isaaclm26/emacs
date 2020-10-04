@@ -30,7 +30,6 @@
 
 (setq scroll-step 1) ;; keyboard scroll one line at a time
 
-
 ;; Solve smooth scrolling
 (setq redisplay-dont-pause t
   scroll-margin 1
@@ -89,6 +88,56 @@
 
 ;; Gnuplot mode
 (use-package gnuplot-mode)
+
+
+;; lsp-mode (Language Server Protocol)
+
+(use-package lsp-mode
+  :ensure t
+  :commands (lsp lsp-deferred)
+  :hook (go-mode . lsp-deferred))
+
+;; Set up before-save hooks to format buffer and add/delete imports.
+;; Make sure you don't have other gofmt/goimports hooks enabled.
+(defun lsp-go-install-save-hooks ()
+  (add-hook 'before-save-hook #'lsp-format-buffer t t)
+  (add-hook 'before-save-hook #'lsp-organize-imports t t))
+(add-hook 'go-mode-hook #'lsp-go-install-save-hooks)
+
+;; lsp-haskell
+;; Configurar aqui https://emacs-lsp.github.io/lsp-haskell/
+
+;; (require 'lsp-haskell)
+;; ;; Hooks so haskell and literate haskell major modes trigger LSP setup
+;; (add-hook 'haskell-mode-hook #'lsp)
+;; (add-hook 'haskell-literate-mode-hook #'lsp)
+
+
+
+;; Optional - provides fancier overlays.
+(use-package lsp-ui
+  :ensure t
+  :commands lsp-ui-mode)
+
+;; Company mode is a standard completion package that works well with lsp-mode.
+(use-package company
+  :ensure t
+  :config
+  ;; Optionally enable completion-as-you-type behavior.
+  (setq company-idle-delay 0)
+  (setq company-minimum-prefix-length 1))
+
+;; Optional - provides snippet support.
+(use-package yasnippet
+  :ensure t
+  :commands yas-minor-mode
+  :hook (go-mode . yas-minor-mode))
+
+;; flycheck (Syntax Checking)
+
+(use-package flycheck
+  :ensure)
+
 
 ;; Tab-size
 (setq default-tab-width 4)
@@ -207,7 +256,9 @@
 
 (use-package yasnippet
   :ensure t
+  :commands yas-minor-mode
   :init (yas-global-mode 1)
+  :hook (go-mode . yas-minor-mode)
   :config
   (define-key yas-minor-mode-map (kbd "<tab>") nil)
   (define-key yas-minor-mode-map (kbd "TAB") nil)
@@ -215,10 +266,10 @@
   )
 
 
-(use-package auto-complete
-  :ensure t
-  :config (ac-config-default)
-  )
+;; (use-package auto-complete
+;;   :ensure t
+;;   :config (ac-config-default)
+;;   )
 
 
 (use-package company
@@ -281,10 +332,10 @@
 
 (use-package windmove
   :ensure t
-  :bind (("C-c <up>" . windmove-up)
-         ("C-c <left>" . windmove-left)
-         ("C-c <right>" . windmove-right)
-         ("C-c <down>" . windmove-down))
+  :bind (("C-c l" . windmove-up)
+         ("C-c j" . windmove-left)
+         ("C-c ñ" . windmove-right)
+         ("C-c k" . windmove-down))
   )
 
 
@@ -307,21 +358,19 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-safe-themes
-   (quote
-	("10461a3c8ca61c52dfbbdedd974319b7f7fd720b091996481c8fb1dded6c6116" default)))
+   '("10461a3c8ca61c52dfbbdedd974319b7f7fd720b091996481c8fb1dded6c6116" default))
  '(package-selected-packages
-   (quote
-	(sage-shell-mode visual-regexp-steroids gnuplot-mode gnuplot elpygen use-package smex smartparens rainbow-mode rainbow-delimiters py-autopep8 pretty-mode powerline-evil neotree multiple-cursors multi-term mode-icons magit ido-vertical-mode ido-completing-read+ hlinum haskell-mode flx-ido elpy doom-themes auto-complete auctex)))
+   '(lsp-haskell python-mode sage-shell-mode visual-regexp-steroids gnuplot-mode gnuplot elpygen use-package smex smartparens rainbow-mode rainbow-delimiters py-autopep8 pretty-mode powerline-evil neotree multiple-cursors multi-term mode-icons magit ido-vertical-mode ido-completing-read+ hlinum haskell-mode flx-ido elpy doom-themes auctex))
  '(spaceline-all-the-icons-file-name-highlight nil)
  '(spaceline-all-the-icons-hide-long-buffer-path t)
- '(spaceline-all-the-icons-separator-type (quote arrow))
+ '(spaceline-all-the-icons-separator-type 'arrow)
  '(spaceline-all-the-icons-separators-invert-direction t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(spaceline-highlight-face ((t (:background "DarkOrange3")))))
 
 ; @begin(61668279)@ - Do not edit these lines - added automatically!
 (if (file-exists-p "/home/isaac/.ciaoroot/master/ciao_emacs/elisp/ciao-site-file.el")
